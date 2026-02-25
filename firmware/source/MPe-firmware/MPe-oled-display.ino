@@ -23,7 +23,8 @@ void screenReset()
 
   if (!screenconfig)
   {
-    display.begin(SSD1306_SWITCHCAPVCC, SSD1306_I2C_ADDRESS, false);
+    // Ustawienia I2C zdefiniowane w setup() w glownym pliku ESP32, nie trzeba podawac pinow
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C, false);
   }
 }
 #endif
@@ -35,7 +36,7 @@ void screenRefresh()
 #endif
 
 #ifdef SERIALPLOT
-    if ((millis() - timer_refresh > SCREENREFRESH) && (millis() > 2500) && (!EEPROM.readInt(ADR_SERIAL_PLOT)))
+    if ((millis() - timer_refresh > SCREENREFRESH) && (millis() > 2500) && (!mpeEEPROM.readInt(ADR_SERIAL_PLOT)))
 #endif
     {
       timer_refresh = millis();
@@ -97,13 +98,13 @@ void screen1()
   display.setTextSize(2);
 
   // ASSIST MODE
-  if (EEPROM.readInt(ADR_LEGALLIMIT_ON_OFF))
+  if (mpeEEPROM.readInt(ADR_LEGALLIMIT_ON_OFF))
   {
     display.fillRect(114, 16, 12, 16, WHITE);
     display.setTextColor(BLACK);
   }
   display.setCursor(115, 17);
-  display.println(EEPROM.readInt(ADR_ASSISTMODE));
+  display.println(mpeEEPROM.readInt(ADR_ASSISTMODE));
 
   display.setTextColor(WHITE);
 
@@ -138,7 +139,7 @@ void screen1()
   // SPEED UNIT
   display.setCursor(0, 0);
 
-  if (EEPROM.readInt(ADR_KPHMPH))
+  if (mpeEEPROM.readInt(ADR_KPHMPH))
   {
     // display.println("mph");
     display.println("$%'"); // Not used characters removed from glcdfont.c / actual characters changed their position
@@ -183,7 +184,7 @@ void screen1()
 
   display.fillRect(60, 30, 1, 2, WHITE); // coma
 
-#define STARTX 80 // battery symbol   size
+#define STARTX 80 // battery symbol  size
 #define STARTY 16
 #define SIZEX 29
 #define SIZEY 16
@@ -449,7 +450,7 @@ void screenConfig()
     break;
 
   case 997:
-    value = analogRead(A3);
+    value = analogRead(PIN_TORQUE_SENSOR); // Zastapiono A3 pinem ESP32
     break;
 
   case 996:
@@ -457,7 +458,7 @@ void screenConfig()
     break;
 
   default:
-    value = EEPROM.readInt(getCfgAddress(address));
+    value = mpeEEPROM.readInt(getCfgAddress(address));
     break;
   }
 
@@ -506,7 +507,7 @@ void selectConfig(int conf, bool updwn)
   if (conf < 4)
     address = changeConfigValue(address, updwn, conf);
   else
-    EEPROM.updateInt(_address, changeConfigValue(EEPROM.readInt(_address), updwn, conf));
+    mpeEEPROM.updateInt(_address, changeConfigValue(mpeEEPROM.readInt(_address), updwn, conf));
 }
 
 unsigned int changeConfigValue(unsigned int value, bool updwn, int place)
