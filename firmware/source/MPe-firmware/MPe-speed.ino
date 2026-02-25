@@ -20,7 +20,7 @@
 void checkIfStopped()
 {
   int time = 2500;
-  if ((EEPROM.readInt(ADR_MOT_MAG) > 1))
+  if ((mpeEEPROM.readInt(ADR_MOT_MAG) > 1))
     time = 1000;
 
   if ((millis() - timer_stopped > time) && !stopped)
@@ -33,7 +33,6 @@ void checkIfStopped()
 
 float avgSpeed()
 {
-
   float avg = 0.0;
   avg = trip / moving_time * 60.0;
 
@@ -43,12 +42,14 @@ float avgSpeed()
   return avg;
 }
 
-void mot_rot()
+// Zabezpieczenie IRAM_ATTR dla szybkiego przerwania!
+void IRAM_ATTR mot_rot()
 {
   rotation_impulses++;
 }
 
-void speed_one()
+// Zabezpieczenie IRAM_ATTR dla szybkiego przerwania!
+void IRAM_ATTR speed_one()
 {
   if (!speed_impulse) // debouncing
     speedOneimpulseTime = millis() - timer_speed_one;
@@ -64,7 +65,6 @@ void speed_one_check()
   {
     if (speed_impulse)
     {
-
       stopped = false;
 
       detachInterrupt(PIN_DSPEED);
@@ -72,7 +72,7 @@ void speed_one_check()
       attachInterrupt(digitalPinToInterrupt(PIN_DSPEED), speed_one, FALLING);
 
       float spd = 0.0;
-      spd = EEPROM.readInt(ADR_PERIMETER) * 3.4344 / speedOneimpulseTime; // experimental: 3.4344 instead of 3.6   because it seems like in real life readings are ~5% higher, so we decreasing perimeter about 5%
+      spd = mpeEEPROM.readInt(ADR_PERIMETER) * 3.4344 / speedOneimpulseTime; // experimental: 3.4344 instead of 3.6   because it seems like in real life readings are ~5% higher, so we decreasing perimeter about 5%
       speed_filtered.Filter(spd);
       timer_stopped = millis();
     }
@@ -90,10 +90,10 @@ void speed_multi(int time)
   rotation_impulses = 0;
   attachInterrupt(digitalPinToInterrupt(PIN_DSPEED), mot_rot, FALLING);
 
-  rps = (rot_imp * (1000.0 / time)) / (EEPROM.readInt(ADR_MOT_MAG) / 2);
+  rps = (rot_imp * (1000.0 / time)) / (mpeEEPROM.readInt(ADR_MOT_MAG) / 2);
 
   rpm = rps * 60.0;
-  spd = (rpm / 1000.0) / (EEPROM.readInt(ADR_GEAR_RATIO) / 10.0) * 60.0 * (EEPROM.readInt(ADR_PERIMETER) / 1050.0); // experimental: 1050.0 becouse it seems like in real life readings are ~5% higher, so we decreasing perimeter about 5%
+  spd = (rpm / 1000.0) / (mpeEEPROM.readInt(ADR_GEAR_RATIO) / 10.0) * 60.0 * (mpeEEPROM.readInt(ADR_PERIMETER) / 1050.0); // experimental: 1050.0 becouse it seems like in real life readings are ~5% higher, so we decreasing perimeter about 5%
   speed_filtered.Filter(spd);
 
   if (spd > 1.0)
@@ -111,12 +111,12 @@ void countSpeed()
   {
     timer_speed = millis();
 
-    if ((EEPROM.readInt(ADR_MOT_MAG) > 1))
+    if ((mpeEEPROM.readInt(ADR_MOT_MAG) > 1))
       speed_multi(time);
 
     speed = speed_filtered.Current();
 
-    if (EEPROM.readInt(ADR_KPHMPH))
+    if (mpeEEPROM.readInt(ADR_KPHMPH))
       speed = speed * 0.621;
 
     if (speed > vmax)
