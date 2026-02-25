@@ -58,11 +58,11 @@
 
 // REST
 #ifdef MTG
-#define NUM_SCREEN_POSITIONS 6
+#define NUM_SCREEN_POSITIONS 7
 #endif
 
 #ifndef MTG
-#define NUM_SCREEN_POSITIONS 5
+#define NUM_SCREEN_POSITIONS 6
 #endif
 
 // --- ZAKTUALIZOWANA MAPA PINÓW DLA ESP32 ---
