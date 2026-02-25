@@ -123,15 +123,16 @@ PrintWithSC mySerial(Serial);
 class ProxyEEPROM {
   public:
     int readInt(int address) {
-      int val;
+      int16_t val; // Wymuszamy 2-bajtowy odczyt, zgodnie z oryginalną "mapą" adresów
       EEPROM.get(address, val);
       return val;
     }
     void updateInt(int address, int val) {
-      int current;
+      int16_t current;
       EEPROM.get(address, current);
       if (current != val) {
-        EEPROM.put(address, val);
+        int16_t val16 = val; // Wymuszamy 2-bajtowy zapis
+        EEPROM.put(address, val16);
         EEPROM.commit();
       }
     }
