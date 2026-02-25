@@ -108,9 +108,6 @@
 #define DEBUG_PRLN(x)
 #endif
 
-// (Tutaj celowo pominięto definicje adresów EEPROM ADR_... aby nie wydłużać kodu,
-// załóżmy, że kopiujesz je ze swojego oryginału - one się NIE ZMIENIAJĄ)
-
 // Configuration
 #include "MPe-configuration.h"
 
@@ -139,13 +136,6 @@ class ProxyEEPROM {
     }
 };
 ProxyEEPROM mpeEEPROM;
-
-// Funkcja globalna dla ładowania float
-float eepromLoadFloat(int address) {
-  float val;
-  EEPROM.get(address, val);
-  return val;
-}
 
 #ifdef PAS
 // POWER PID
