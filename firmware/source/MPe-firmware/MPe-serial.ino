@@ -29,7 +29,7 @@ void serialPrintInfo()
 
   if (millis() - timer_send_uart > TIME_SEND_UART)
   {
-    if (EEPROM.readInt(ADR_PRINTINFO))
+    if (mpeEEPROM.readInt(ADR_PRINTINFO))
     {
       mySerial.write("MPe;");
       mySerial.printsc(speed, 1);
@@ -38,7 +38,7 @@ void serialPrintInfo()
       mySerial.printsc(trip, 1);
       mySerial.printsc(int(getPower()));
       mySerial.printsc(int(getTemp_1()));
-      mySerial.printsc(EEPROM.readInt(ADR_ASSISTMODE));
+      mySerial.printsc(mpeEEPROM.readInt(ADR_ASSISTMODE));
       mySerial.printsc(int(dist));
       mySerial.printsc(int(avgSpeed()));
       mySerial.printsc(int(vmax));
@@ -48,14 +48,14 @@ void serialPrintInfo()
       mySerial.printsc(int(imax));
       mySerial.printsc(int(powermax));
       mySerial.printsc(whkm(), 1);
-      mySerial.printsc((EEPROM.readInt(ADR_BATCAP_AH) / 10.0), 1);
+      mySerial.printsc((mpeEEPROM.readInt(ADR_BATCAP_AH) / 10.0), 1);
       mySerial.printsc((mah_used / 1000), 1);
       mySerial.printsc(int(getTemp_2()));
       mySerial.printsc(numberCharges());
       mySerial.printsc(brake);
       mySerial.printsc(cruisecontrol);
       mySerial.printsc(FIRMWARE_VERSION);
-      mySerial.printsc(EEPROM.readInt(ADR_LEGALLIMIT_ON_OFF));
+      mySerial.printsc(mpeEEPROM.readInt(ADR_LEGALLIMIT_ON_OFF));
       mySerial.printsc(int(Wh_used));
       mySerial.printsc(!rideOK);
 #ifdef PAS
@@ -66,7 +66,7 @@ void serialPrintInfo()
 #endif
       mySerial.printsc(getThrottleInputmV());
 #ifdef PAS
-      mySerial.printsc(analogRead(A3));                        // adc torque sensor
+      mySerial.printsc(analogRead(PIN_TORQUE_SENSOR));           // adc torque sensor na ESP32 (dawniej A3)
       Serial.print(int(weightOnPedal_adc_filtered.Current())); // kgF
 #endif
 #ifndef PAS
@@ -106,21 +106,24 @@ void serialConfig()
         Serial.print("CFG;");
         mySerial.printsc(address);
 
-        Serial.print(EEPROM.readInt(address));
+        Serial.print(mpeEEPROM.readInt(address));
         Serial.println(";");
 
         break;
 
-      case 2: // save INT
+      case 2: // save INT/FLOAT
         address = Serial.parseInt();
         value = Serial.parseInt();
 
-        if (address == ADRDIST || address == ADRTOTMAHUSED)
-          EEPROM.updateFloat(address, value);
+        if (address == ADRDIST || address == ADRTOTMAHUSED) {
+          float val_f = value;
+          EEPROM.put(address, val_f);
+          EEPROM.commit();
+        }
         else if ((address == ADRFIRSTTIME) || (address % 2))
           break;
         else
-          EEPROM.updateInt(address, value);
+          mpeEEPROM.updateInt(address, value);
         break;
 
       case 3:
@@ -192,12 +195,11 @@ void serialConfig()
 
 void printAllConfig()
 {
-
   Serial.print("ALL;");
 
   for (int i = 200; i < 512; i += 2)
   {
-    mySerial.printsc(EEPROM.readInt(i));
+    mySerial.printsc(mpeEEPROM.readInt(i));
   }
   Serial.println("#END");
 }
