@@ -65,19 +65,24 @@
 #define NUM_SCREEN_POSITIONS 5
 #endif
 
-// PINS DIGITAL // UNUSED PINS: 1,4,9,10,11,12,13
-#define PIN_PAS 2
-#define PIN_DSPEED 3
-#define PIN_THROTTLE_OUT 5
-#define PIN_BUTTON_DOWN 7
-#define PIN_BUTTON_UP 6
-#define PIN_BRAKE 8
+// --- ZAKTUALIZOWANA MAPA PINÓW DLA ESP32 ---
+// PINS DIGITAL
+#define PIN_PAS 18             
+#define PIN_DSPEED 19          
+#define PIN_THROTTLE_OUT 25    // DAC
+#define PIN_BUTTON_DOWN 27     
+#define PIN_BUTTON_UP 14       
+#define PIN_BRAKE 12           
 
-// PINS ANALOG ATMEGA328 // UNUSED PINS: A2,A3,A6,A7
-#define PIN_LM35_TEMP_T1 0
-#define PIN_LM35_TEMP_T2 1
-#define PIN_SDA 4 // DISPLAY
-#define PIN_SCL 5 // DISPLAY
+// PINS ANALOG
+#define PIN_LM35_TEMP_T1 32    
+#define PIN_LM35_TEMP_T2 33  
+#define PIN_TORQUE_SENSOR 34   // Nowy pin do pomiaru nacisku na pedały
+
+// I2C
+#define PIN_SDA 21             
+#define PIN_SCL 22 
+// -------------------------------------------
 
 // PINS ANALOG ADS1115
 #define PIN_V_REFERENCE 0
@@ -100,20 +105,6 @@
 #define A_KTY83 0.02262021256593017
 #define B_KTY83 -0.003444732389272895
 #define C_KTY83 0.00001374931587826135
-
-/*
- #define A_KTY84 0.020453999478825556
- #define B_KTY84 -0.003255834625441624
- #define C_KTY84 0.000014308677805740018
-
-
- //KTY81-210
- #define A_KTY81 0.02036578643006971
- #define B_KTY81 -0.002642924987770203
- #define C_KTY81 0.000007026714406562518
-
- // http://www.useasydocs.com/theory/ntc.htm
-*/
 
 #ifdef DEBUG
 #define DEBUG_PR(x) Serial.print(x)
@@ -163,46 +154,23 @@
 #define ADR_VOL_DIV 214
 #define ADR_CUR_SENSOR_OK 216
 #define ADR_CUR_PROT 218
-// #define	empty 220
-// #define	empty 222
-// #define	empty 224
 #define ADR_TOT_MIN 226
 #define ADR_TOT_MAX 228
 #define ADR_TIN_MIN 230
 #define ADR_TIN_MAX 232
 #define ADR_THR_RESET 234
 #define ADR_THR_SAFE_VOLTAGE 236
-// #define	empty 238
-// #define	empty 240
-// #define	empty 242
-// #define	empty 244
-// #define	empty 246
-// #define	empty 248
 #define ADR_KPHMPH 250
 #define ADR_PERIMETER 252
 #define ADR_MOT_MAG 254
 #define ADR_GEAR_RATIO 256
-// #define	empty 258
-// #define	empty 260
-// #define	empty 262
-// #define	empty 264
-// #define	empty 266
 #define ADR_BT_BUTTONS 268
 #define ADR_EBRAKEHILO 270
-// #define	ADR_EBRAKEINSTALLEDBYPASS 272
-// #define	empty 274
-// #define	empty 276
-// #define	empty 278
 #define ADR_TEMPCTEMPF 280
 #define ADR_TEMPTYPE1 282
 #define ADR_TEMPTYPE2 284
 #define ADR_OVHT1 286
 #define ADR_OVHT2 288
-// #define	ADR_OVHT_REDPOWER 290
-// #define	empty 292
-// #define	empty 294
-// #define	empty 296
-// #define	empty 298
 #define ADR_POWERKP 300
 #define ADR_POWERKI 302
 #define ADR_POWERKD 304
@@ -210,8 +178,6 @@
 #define ADR_I_LOW 308
 #define ADR_D_LOW 310
 #define ADR_LOW_THRESHOLD 312
-// #define	ADR_CRUISEKI 314
-// #define	ADR_CRUISEKD 316
 #define ADR_SPEEDFACTORMIN 318
 #define ADR_PIDPWMMAX 320
 #define ADR_SPEEDFACTOR_RAMP_UP 322
@@ -219,10 +185,6 @@
 #define ADR_CRUISE_CONTROL_POWER_MAX 326
 #define ADR_CRUISE_CONTROL_POWER_RAMP_UP 328
 #define ADR_CRUISE_CONTROL_MAX_SPEED 330
-// #define	empty 332
-// #define	empty 334
-// #define	empty 336
-// #define	empty 338
 #define ADR_AUTOLEGAL 340
 #define ADR_LEGALLIMIT_ON_OFF 342
 #define ADR_LEGALLIMIT_SPEED 344
@@ -280,9 +242,6 @@
 #define ADR_TORQUE_SENSOR_ADC_MIN 448
 #define ADR_TORQUE_SENSOR_ADC_MAX 450
 #define ADR_TORQUE_SENSOR_KGF_MAX 452
-// #define	empty 454
-// #define	empty 456
-// #define	empty 458
 #define ADR_PWR_LIM_THR_1 460
 #define ADR_PWR_LIM_THR_2 462
 #define ADR_PWR_LIM_THR_3 464
@@ -298,14 +257,3 @@
 #define ADR_RAMP_UP_THR_3 484
 #define ADR_RAMP_UP_THR_4 486
 #define ADR_RAMP_UP_THR_5 488
-// #define	empty 490
-// #define	empty 492
-// #define	empty 494
-// #define	empty 496
-// #define	empty 498
-// #define	empty 500
-// #define	empty 502
-// #define	empty 504
-// #define	empty 506
-// #define	empty 508
-// #define	empty 510
