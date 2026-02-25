@@ -57,7 +57,8 @@ float getCurrent()
 
 void checkCurrentAndVoltage()
 {
-  unsigned int time = 0;
+  // Korekta techniczna: zmiana na unsigned long dla spójności z millis()
+  unsigned long time = 0;
   time = (millis() - timer_30ms_loop);
 
   if (time > T30MS_LOOP)
