@@ -420,12 +420,17 @@ bool checkMinimumHumanPower()
 #ifdef PAS
 void checkTorque()
 {
-  int analog_torque = analogRead(A3);
-  weightOnPedal_adc_filtered.Filter(mapConstrain(analog_torque, EEPROM.readInt(ADR_TORQUE_SENSOR_ADC_MIN), EEPROM.readInt(ADR_TORQUE_SENSOR_ADC_MAX), 0, EEPROM.readInt(ADR_TORQUE_SENSOR_KGF_MAX))); // max torque sensor force is 60kgF, multiplied by 10 to have decimal point values as int
+  // Mierzymy nacisk bezpośrednio wolnym pinem ESP32, nie ruszamy ADS1115!
+  int analog_torque = analogRead(PIN_TORQUE_SENSOR); 
+  
+  // Opcjonalna korekta dla ESP32, który ma przetwornik 12-bit (0-4095), 
+  // a Atmega miała 10-bit (0-1023). Mapujemy to do starego formatu, by reszta logiki działała bez zmian.
+  analog_torque = map(analog_torque, 0, 4095, 0, 1023);
+
+  weightOnPedal_adc_filtered.Filter(mapConstrain(analog_torque, mpeEEPROM.readInt(ADR_TORQUE_SENSOR_ADC_MIN), mpeEEPROM.readInt(ADR_TORQUE_SENSOR_ADC_MAX), 0, mpeEEPROM.readInt(ADR_TORQUE_SENSOR_KGF_MAX)));
 
   humanPower_adc_filtered.Filter((weightOnPedal_adc_filtered.Current() * getCadence()) / 55);
 
-  // if just rotatnig cranks without force
   if (!checkMinimumHumanPower())
     ZeroNoPedallingTimer();
 }
