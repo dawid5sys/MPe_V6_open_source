@@ -78,6 +78,8 @@
 #define PIN_LM35_TEMP_T1 32    
 #define PIN_LM35_TEMP_T2 33  
 #define PIN_TORQUE_SENSOR 34   // Nowy pin do pomiaru nacisku na pedały
+#define PIN_LM35_TEMP_T3 35    // Nowy czujnik T3
+#define PIN_LM35_TEMP_T4 36    // Nowy czujnik T4
 
 // I2C
 #define PIN_SDA 21             
