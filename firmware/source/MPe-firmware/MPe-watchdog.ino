@@ -17,20 +17,20 @@
  * Copyright (C) 2022 Marek Przybylak
  */
 
+#include <esp_system.h>
+
 void enable_watchdog()
 {
-  cli();
-  wdt_reset();
-  WDTCSR |= B00011000;
-  // WDTCSR =  B01001100;   //0.25s
-  // WDTCSR =  B01001101;   //0.5s
-  WDTCSR = B01001110; // 1.0s
-  sei();
-}
+  // W ESP32 Watchdog został już uruchomiony w setup() w głównym pliku MPe-firmware.ino.
+  // Tutaj weryfikujemy, co było powodem ostatniego resetu procesora.
 
-// WATCHDOG Interrupt
-ISR(WDT_vect)
-{
-  EEPROM.updateInt(ADR_WATCHDOGRESET, 1);
-  saveData();
+  esp_reset_reason_t reset_reason = esp_reset_reason();
+
+  // Sprawdzamy, czy reset nastąpił z powodu Watchdoga
+  if (reset_reason == ESP_RST_WDT || reset_reason == ESP_RST_TASK_WDT || reset_reason == ESP_RST_INT_WDT)
+  {
+    // Zapisujemy flagę błędu do emulowanego EEPROM dokładnie tak, jak robiło to ISR na Atmędze
+    mpeEEPROM.updateInt(ADR_WATCHDOGRESET, 1);
+    saveData();
+  }
 }
