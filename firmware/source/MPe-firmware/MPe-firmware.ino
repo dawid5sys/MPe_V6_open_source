@@ -67,7 +67,8 @@
 #define PIN_THROTTLE_OUT 25    // DAC (Prawdziwy analog 0-3.3V)
 #define PIN_BUTTON_DOWN 27     
 #define PIN_BUTTON_UP 14       
-#define PIN_BRAKE 12           
+#define PIN_BRAKE 12    
+#define PIN_TORQUE_SENSOR 34   // Zwykłe wejście analogowe na ESP32 (ADC1)
 
 // --- PINS ANALOG ESP32 ---
 #define PIN_LM35_TEMP_T1 32    
