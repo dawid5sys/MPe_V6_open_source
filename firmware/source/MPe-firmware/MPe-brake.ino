@@ -20,11 +20,14 @@
 void checkEbrake()
 {
   bool br = digitalRead(PIN_BRAKE);
-  if (br == EEPROM.readInt(ADR_EBRAKEHILO))
+  
+  // ESP32: Odczyt stanu z emulowanego EEPROM
+  if (br == mpeEEPROM.readInt(ADR_EBRAKEHILO))
   {
     brake = true;
 
-    if (EEPROM.readInt(ADR_THR_RESET) && (speed < 3.0))
+    // ESP32: Odczyt ustawienia resetu manetki z emulowanego EEPROM
+    if (mpeEEPROM.readInt(ADR_THR_RESET) && (speed < 3.0))
       SetThrRelResetFALSE();
   }
   else
