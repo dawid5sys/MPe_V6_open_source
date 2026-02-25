@@ -136,7 +136,7 @@ void checkButtons()
 
 void UPDWNDepressedAction()
 {
-  if (!EEPROM.readInt(ADR_BT_BUTTONS) && !screenconfig)
+  if (!mpeEEPROM.readInt(ADR_BT_BUTTONS) && !screenconfig)
   {
     statscreen = !statscreen;
     if (screen == 1)
@@ -180,12 +180,12 @@ void UPDepressedAction()
 
   if (screen == 1 && !screenconfig && !cruisecontrol)
   {
-    int assist = EEPROM.readInt(ADR_ASSISTMODE);
+    int assist = mpeEEPROM.readInt(ADR_ASSISTMODE);
     cruisecontrol = false;
     assist += 1;
     if (assist > 5)
       assist = 5;
-    EEPROM.updateInt(ADR_ASSISTMODE, assist);
+    mpeEEPROM.updateInt(ADR_ASSISTMODE, assist);
     SetThrRelResetFALSE();
     // powerPID.RESET();
   }
@@ -233,11 +233,11 @@ void DWNDepressedAction()
 {
   if (screen == 1 && !screenconfig && !cruisecontrol && !brake)
   {
-    int assist = EEPROM.readInt(ADR_ASSISTMODE);
+    int assist = mpeEEPROM.readInt(ADR_ASSISTMODE);
     assist -= 1;
     if (assist < 0)
       assist = 0;
-    EEPROM.updateInt(ADR_ASSISTMODE, assist);
+    mpeEEPROM.updateInt(ADR_ASSISTMODE, assist);
     SetThrRelResetFALSE();
   }
 
@@ -279,10 +279,10 @@ void DWNLongPressedAction()
 #ifdef PAS
   if (screen == 1 && brake)
   {
-    if (EEPROM.readInt(ADR_LEGALLIMIT_ON_OFF))
-      EEPROM.updateInt(ADR_LEGALLIMIT_ON_OFF, 0);
+    if (mpeEEPROM.readInt(ADR_LEGALLIMIT_ON_OFF))
+      mpeEEPROM.updateInt(ADR_LEGALLIMIT_ON_OFF, 0);
     else
-      EEPROM.updateInt(ADR_LEGALLIMIT_ON_OFF, 1);
+      mpeEEPROM.updateInt(ADR_LEGALLIMIT_ON_OFF, 1);
   }
 
 #endif
