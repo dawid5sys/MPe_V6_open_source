@@ -68,7 +68,7 @@ int mapConstrain(int value, int fromLow, int fromHigh, int toLow, int toHigh)
 float Convert_mVtoBatVol(int mV)
 {
   float ret = 0.0;
-  ret = EEPROM.readInt(ADR_VOL_DIV) / 1000000.0 * mV;
+  ret = mpeEEPROM.readInt(ADR_VOL_DIV) / 1000000.0 * mV;
 
   return ret;
 }
@@ -86,7 +86,9 @@ void set_adc_offset()
   if (adc_will_save && !adc_saved)
   {
     adc_saved = 1;
-    EEPROM.updateFloat(ADR0CURRENT, adc_offset);
+    // Zapisujemy float przy użyciu EEPROM.put i zatwierdzamy
+    EEPROM.put(ADR0CURRENT, adc_offset);
+    EEPROM.commit();
   }
 }
 
@@ -94,17 +96,17 @@ float Convert_mVtoAmp(float mV)
 {
   float ret = 0.0;
   float cur_dir = 1.0;
-  if (EEPROM.readInt(ADR_CURDIR))
+  if (mpeEEPROM.readInt(ADR_CURDIR))
     cur_dir = -1.0;
 
-  ret = cur_dir * ((vRef_filtered.Current() * 500.0) - eepromLoadFloat(ADR0CURRENT) - mV) / float(EEPROM.readInt(ADR_MVPERA));
+  ret = cur_dir * ((vRef_filtered.Current() * 500.0) - eepromLoadFloat(ADR0CURRENT) - mV) / float(mpeEEPROM.readInt(ADR_MVPERA));
 
   return ret;
 }
 
 int acuPercent()
 {
-  int acupercent = int(((EEPROM.readInt(ADR_BATCAP_AH) * 100.0) - mah_used) / (EEPROM.readInt(ADR_BATCAP_AH) * 100.0) * 100.0);
+  int acupercent = int(((mpeEEPROM.readInt(ADR_BATCAP_AH) * 100.0) - mah_used) / (mpeEEPROM.readInt(ADR_BATCAP_AH) * 100.0) * 100.0);
 
   if (acupercent < 0)
     acupercent = 0;
@@ -114,7 +116,7 @@ int acuPercent()
 
 int numberCharges()
 {
-  return int(total_ah_used / (EEPROM.readInt(ADR_BATCAP_AH) / 10.0));
+  return int(total_ah_used / (mpeEEPROM.readInt(ADR_BATCAP_AH) / 10.0));
 }
 
 float whkm()
@@ -140,7 +142,7 @@ int distToGo()
 
   float dtg = 0.0;
 
-  dtg = (EEPROM.readInt(ADR_BATCAP_WH) - Wh_used) / whkm_dtg();
+  dtg = (mpeEEPROM.readInt(ADR_BATCAP_WH) - Wh_used) / whkm_dtg();
 
   if (trip_dtg > 4.0)
   {
@@ -185,7 +187,7 @@ float minutesToGo()
 {
 
   float mtg = 0.0;
-  mtg = int((EEPROM.readInt(ADR_BATCAP_WH) - Wh_used) / (whhour_mtg() / 60.0));
+  mtg = int((mpeEEPROM.readInt(ADR_BATCAP_WH) - Wh_used) / (whhour_mtg() / 60.0));
 
   if (moving_time_mtg > 5.0)
   {
@@ -221,8 +223,8 @@ void resetBattery()
   float percent = 0.0;
 
   vol = getBatRawVoltage();
-  int lvc = (EEPROM.readInt(ADR_LVC) / 10.0) + 2;
-  percent = ((vol - lvc) / ((EEPROM.readInt(ADR_FULL_BATT_V) / 10.0) - lvc)) + 0.05;
+  int lvc = (mpeEEPROM.readInt(ADR_LVC) / 10.0) + 2;
+  percent = ((vol - lvc) / ((mpeEEPROM.readInt(ADR_FULL_BATT_V) / 10.0) - lvc)) + 0.05;
 
   if (percent > 1.0)
     percent = 1.0;
@@ -230,8 +232,8 @@ void resetBattery()
   if (percent < 0.0)
     percent = 0.0;
 
-  float batWh = float(EEPROM.readInt(ADR_BATCAP_WH));
-  float batAh = float(EEPROM.readInt(ADR_BATCAP_AH) * 100.0);
+  float batWh = float(mpeEEPROM.readInt(ADR_BATCAP_WH));
+  float batAh = float(mpeEEPROM.readInt(ADR_BATCAP_AH) * 100.0);
 
   Wh_used = batWh - (batWh * percent);
   mah_used = batAh - (batAh * percent);
